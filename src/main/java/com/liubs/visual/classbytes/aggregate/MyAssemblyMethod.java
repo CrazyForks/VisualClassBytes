@@ -198,61 +198,15 @@ public class MyAssemblyMethod {
         } else if (instType == AbstractInsnNode.IINC_INSN) {
             return new IincInsnNode(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
         } else if (instType == AbstractInsnNode.TABLESWITCH_INSN) {
-            //下面parseMultilineInstn处理
+            //在MultiLineInstn中处理
         } else if (instType == AbstractInsnNode.LOOKUPSWITCH_INSN) {
-            //下面parseMultilineInstn处理
+            //在MultiLineInstn中处理
         } else if (instType == AbstractInsnNode.MULTIANEWARRAY_INSN) {
            return new MultiANewArrayInsnNode(args[0],Integer.parseInt(args[1]));
-        } else {
-            throw new IllegalArgumentException("Unknown instruction type: " + instType);
         }
 
-        return null;
+        throw new IllegalArgumentException("Unknown instruction type: " + instType);
 
-    }
-
-    public AbstractInsnNode parseMultilineInstn(Map<String,LabelNode> labelNodeMap,List<String> lines){
-        String[] fistLine = lines.get(0).split("\\s");
-        String instName = fistLine[0].trim();
-        if("tableswitch".equals(instName)) {
-            int min = Integer.parseInt(fistLine[1]);
-            int max = Integer.parseInt(fistLine[3]);
-            LabelNode deft = null;
-            List<LabelNode> labelNodes = new ArrayList<>();
-            for(int i = 1;i<lines.size();i++) {
-                String[] split = lines.get(i).split(":");
-                String key = split[0].trim();
-                String value = split[1].trim();
-                if("default".equals(key)){
-                    deft = labelNodeMap.get(value);
-                } else {
-                    labelNodes.add(labelNodeMap.get(value));
-                }
-            }
-            TableSwitchInsnNode tableSwitchInsnNode = new TableSwitchInsnNode(min,max,deft,labelNodes.toArray(new LabelNode[0]));
-            return tableSwitchInsnNode;
-        }else if("lookupswitch".equals(instName)) {
-            LabelNode deft = null;
-            List<Integer> keys = new ArrayList<>();
-            List<LabelNode> labelNodes = new ArrayList<>();
-            for(int i = 1;i<lines.size();i++) {
-                String[] split = lines.get(i).split(":");
-                String key = split[0].trim();
-                String value = split[1].trim();
-                if("default".equals(key)){
-                    deft = labelNodeMap.get(value);
-                } else {
-                    keys.add(Integer.parseInt(key));
-                    labelNodes.add(labelNodeMap.get(value));
-                }
-            }
-            LookupSwitchInsnNode lookupSwitchInsnNode = new LookupSwitchInsnNode(deft,
-                    keys.stream().mapToInt(Integer::intValue).toArray(),
-                    labelNodes.toArray(new LabelNode[0]));
-
-            return lookupSwitchInsnNode;
-        }
-        return null;
     }
 
 

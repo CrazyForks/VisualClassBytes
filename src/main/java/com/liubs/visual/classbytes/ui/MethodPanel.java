@@ -12,6 +12,7 @@ import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
+import com.liubs.visual.classbytes.aggregate.MultiLineInstn;
 import com.liubs.visual.classbytes.entity.MyInstructionInfo;
 import com.liubs.visual.classbytes.entity.MyLineNumber;
 import com.liubs.visual.classbytes.entity.Result;
@@ -344,9 +345,24 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
             treeNode.getMethodNode().localVariables = localVariables;
 
             //构建指令
-            boolean specialMultiLineInsn = false;   //多行指令
-            List<String> multiLine = new ArrayList<>();
+            MultiLineInstn multiLineInstn = null;
             for(int i=0;i < assemblyCodes.length ;i++) {
+
+                //指令
+                String line = assemblyCodes[i];
+                if(line.trim().equals("")){
+                    continue;
+                }
+                String[] split = line.split("\\s");
+                String firstInstnType = split.length >0 ? split[0].trim().toLowerCase() : "";
+
+                //多行指令结束
+                if(null != multiLineInstn && multiLineInstn.isMultiEnd(firstInstnType)) {
+                    AbstractInsnNode insnNode = multiLineInstn.parseInstnNode(labelNodeMap);
+                    insnList.add(insnNode);
+                    multiLineInstn = null;
+                }
+
                 //label和行号
                 MyLineNumber myLineNumber = lineEditorMap.get(i);
                 if(null != myLineNumber) {
@@ -355,39 +371,22 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
                     if(myLineNumber.getLineSource() > 0) {
                         insnList.add(new LineNumberNode(myLineNumber.getLineSource(),labelNode));
                     }
+                }
 
-                    //遇到下一个label结束多行指令
-                    if(specialMultiLineInsn) {
-                        specialMultiLineInsn = false;
-                        AbstractInsnNode insnNode = treeNode.getAssemblyMethod().parseMultilineInstn(labelNodeMap, multiLine);
+                if(null == multiLineInstn) {
+                    if(MultiLineInstn.isMultiLineInstn(firstInstnType)) {
+                        //多行指令构建
+                        multiLineInstn = MultiLineInstn.newInstn();
+                        multiLineInstn.addLine(line);
+                    }else {
+                        String[] args = split.length>1 ? Arrays.copyOfRange(split, 1, split.length) : null;
+                        AbstractInsnNode insnNode = treeNode.getAssemblyMethod().parseInstNode(labelNodeMap,firstInstnType, args);
                         insnList.add(insnNode);
-                        multiLine.clear();
                     }
-                }
-                //指令
-                String line = assemblyCodes[i];
-                if(line.trim().equals("")){
-                    continue;
-                }
-                String[] split = line.split("\\s");
-                if(specialMultiLineInsn) {
-                    multiLine.add(line);
                 }else {
-                    if("tableswitch".equals(split[0])){
-                        specialMultiLineInsn = true;
-                        multiLine.add(line);
-                        continue;
-                    }else if("lookupswitch".equals(split[0])) {
-                        specialMultiLineInsn = true;
-                        multiLine.add(line);
-                        continue;
-                    }
-
-                    String[] args = split.length>1 ? Arrays.copyOfRange(split, 1, split.length) : null;
-                    AbstractInsnNode insnNode = treeNode.getAssemblyMethod().parseInstNode(labelNodeMap, split[0].toLowerCase(), args);
-                    insnList.add(insnNode);
+                    //多行指令构建
+                    multiLineInstn.addLine(line);
                 }
-
             }
             if(!allMarkedLines.isEmpty()
                     && assemblyCodes.length-1 < allMarkedLines.get(allMarkedLines.size()-1).getLineEditor()) {
