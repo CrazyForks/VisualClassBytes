@@ -1,0 +1,61 @@
+<idea-plugin>
+  <id>com.liubs.visualclassbytes</id>
+  <name>VisualClassBytes</name>
+  <version>1.0.0</version>
+  <vendor email="Liubsyy@gmail.com" url="https://github.com/Liubsyy/VisualClassBytes">Liubsyy</vendor>
+
+  <description><![CDATA[
+
+    Class bytes editor
+
+    <br>
+
+    <ul>
+        <li>Init plugin forasda  asd as d</li>
+
+    </ul>
+
+    ]]></description>
+
+  <change-notes><![CDATA[
+
+
+      <h3>1.0</h3>
+      <ul>
+        <li>Init plugin</li>
+      </ul>
+    ]]>
+  </change-notes>
+
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="203"/>
+
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.java</depends>
+
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileEditorProvider implementation="com.liubs.visual.classbytes.editor.VisualClassProvider"/>
+
+    <projectService serviceImplementation="com.liubs.visual.classbytes.bean.OpenedEditors"/>
+
+    <notificationGroup id="VisualClassBytesNoticeGroup" isLogByDefault="true" displayType="BALLOON"/>
+
+  </extensions>
+
+
+  <actions>
+    <action id="openClassEditor" class="com.liubs.visual.classbytes.action.OpenClassEditorAction"
+            text="Visual ClassBytes" description="Visual class bytes editor" >
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+
+
+
+  </actions>
+
+
+</idea-plugin>
