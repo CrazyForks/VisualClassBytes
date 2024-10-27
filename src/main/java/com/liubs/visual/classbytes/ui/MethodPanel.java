@@ -13,6 +13,8 @@ import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.liubs.visual.classbytes.aggregate.MultiLineInstn;
+import com.liubs.visual.classbytes.editor.AutoComplete;
+import com.liubs.visual.classbytes.editor.KeywordHighlighter;
 import com.liubs.visual.classbytes.entity.MyInstructionInfo;
 import com.liubs.visual.classbytes.entity.MyLineNumber;
 import com.liubs.visual.classbytes.entity.Result;
@@ -73,14 +75,27 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
     private DefaultTableModel visibleAnnotations;
     private DefaultTableModel invisibleAnnotations;
 
+    private Editor createEditor(){
+        Document document = EditorFactory.getInstance().createDocument("");
+        Editor editor = EditorFactory.getInstance().createEditor(document, project);
+
+        //语法高亮
+        KeywordHighlighter keywordHighlighter = new KeywordHighlighter(editor);
+        keywordHighlighter.autoHighlighter();
+
+        //代码补全
+        AutoComplete autoComplete = new AutoComplete(editor);
+        autoComplete.autoComplete();
+
+        return editor;
+    }
 
     public MethodPanel(Project project) {
         this.project = project;
 
-        Document document = EditorFactory.getInstance().createDocument("");
-        this.editor = EditorFactory.getInstance().createEditor(document, project);
-
         setLayout(new BorderLayout());
+
+        this.editor = createEditor();
 
         JPanel baseInfo = FormBuilder.createFormBuilder()
                 .setVerticalGap(8)
@@ -151,6 +166,7 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
 
         initEditableAction();
     }
+
 
     private void initEditableAction(){
         access.onActionForCheckAccessBox("Method access", AccessConstant.METHOD_FLAGS,
