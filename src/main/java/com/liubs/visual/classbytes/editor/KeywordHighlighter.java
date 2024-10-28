@@ -6,10 +6,13 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.util.Key;
 import groovyjarjarasm.asm.util.Printer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +23,8 @@ import java.util.regex.Pattern;
  */
 
 public class KeywordHighlighter {
+    private static final Key<Boolean> KEYWORDHIGHLIGHTER = Key.create("liubsyy_KeywordHighlighter");
+
     private final Editor editor;
 
     private static final Map<String, Pattern> KEY_WORDS_PATTERNS = new HashMap<>();
@@ -49,7 +54,18 @@ public class KeywordHighlighter {
 
     private void highlightKeywords() {
         MarkupModel markupModel = editor.getMarkupModel();
-        markupModel.removeAllHighlighters(); // 清除现有的高亮
+
+        // 移除旧的 Highlighter
+        List<RangeHighlighter> toRemove = new ArrayList<>();
+        for (RangeHighlighter highlighter : markupModel.getAllHighlighters()) {
+            if (Boolean.TRUE.equals(highlighter.getUserData(KEYWORDHIGHLIGHTER))) {
+                toRemove.add(highlighter);
+            }
+        }
+        for (RangeHighlighter highlighter : toRemove) {
+            markupModel.removeHighlighter(highlighter);
+        }
+
 
         String text = editor.getDocument().getText();
 
