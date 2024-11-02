@@ -1,0 +1,20 @@
+{
+  parserClass="com.liubs.vcb.language.parser.VCBParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="VCB"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.liubs.vcb.language.psi"
+  psiImplPackage="com.liubs.vcb.language.psi.impl"
+
+  elementTypeHolderClass="com.liubs.vcb.language.psi.VCBTypes"
+  elementTypeClass="com.liubs.vcb.language.VCBElementType"
+  tokenTypeClass="com.liubs.vcb.language.VCBTokenType"
+}
+
+simpleFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY

@@ -37,17 +37,22 @@
 
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileEditorProvider implementation="com.liubs.visual.classbytes.editor.VisualClassProvider"/>
+    <fileEditorProvider implementation="com.liubs.vcb.editor.VisualClassProvider"/>
 
-    <projectService serviceImplementation="com.liubs.visual.classbytes.bean.OpenedEditors"/>
+    <projectService serviceImplementation="com.liubs.vcb.bean.OpenedEditors"/>
 
     <notificationGroup id="VisualClassBytesNoticeGroup" isLogByDefault="true" displayType="BALLOON"/>
+
+    <fileType name="VCB File" language="liubsyy_VCB" implementationClass="com.liubs.vcb.language.VCBLanguageFileType" extensions="vcb" />
+    <lang.parserDefinition language="liubsyy_VCB" implementationClass="com.liubs.vcb.language.MyParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="liubsyy_VCB" implementationClass="com.liubs.vcb.language.MySyntaxHighlighterFactory"/>
+    <completion.contributor language="liubsyy_VCB"  implementationClass="com.liubs.vcb.language.MyCompletionContributor"/>
 
   </extensions>
 
 
   <actions>
-    <action id="openClassEditor" class="com.liubs.visual.classbytes.action.OpenClassEditorAction"
+    <action id="openClassEditor" class="com.liubs.vcb.action.OpenClassEditorAction"
             text="Visual ClassBytes" description="Visual class bytes editor" >
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>

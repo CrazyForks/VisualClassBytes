@@ -43,6 +43,15 @@ dependencies {
 
 }
 
+// Include the generated files in the source set
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/gen")
+        }
+    }
+}
+
 
 intellij {
     pluginName = pluginName_
