@@ -1,5 +1,6 @@
 package com.liubs.vcb.ui;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -87,6 +88,9 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
             PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
             if(null != psiFile && null != psiFile.getVirtualFile()) {
                 editor = EditorFactory.getInstance().createEditor(psiFile.getViewProvider().getDocument(), project);
+                //关闭语法检测
+                DaemonCodeAnalyzer daemonCodeAnalyzer = DaemonCodeAnalyzer.getInstance(project);
+                daemonCodeAnalyzer.setHighlightingEnabled(psiFile, false);
             }
         }catch (Throwable ex){
             ex.printStackTrace();
@@ -105,15 +109,6 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
                 editorEx.setEmbeddedIntoDialogWrapper(true);
             }
         }
-
-
-//        //语法高亮
-//        KeywordHighlighter keywordHighlighter = new KeywordHighlighter(editor);
-//        keywordHighlighter.autoHighlighter();
-//
-//        //代码补全
-//        AutoComplete autoComplete = new AutoComplete(editor);
-//        autoComplete.autoComplete();
 
         return editor;
     }
