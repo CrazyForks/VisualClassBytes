@@ -6,6 +6,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.project.Project;
@@ -26,6 +27,8 @@ import com.liubs.vcb.language.VCBLanguageFileType;
 import com.liubs.vcb.tree.MethodTreeNode;
 import com.liubs.vcb.constant.AccessConstant;
 import com.liubs.vcb.ui.common.EditableLabel;
+import com.liubs.vcb.ui.linemark.LineMarkManager;
+import com.liubs.vcb.ui.linemark.MyLineMakRenderer;
 import com.liubs.vcb.util.ExceptionUtil;
 import org.objectweb.asm.tree.*;
 
@@ -34,6 +37,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -79,39 +85,6 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
 
     private DefaultTableModel visibleAnnotations;
     private DefaultTableModel invisibleAnnotations;
-
-    private Editor createEditor(){
-
-        LightVirtualFile virtualFile = null;
-        try{
-            virtualFile = new LightVirtualFile("fileName.vcb", VCBLanguageFileType.INSTANCE, "");
-            PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-            if(null != psiFile && null != psiFile.getVirtualFile()) {
-                editor = EditorFactory.getInstance().createEditor(psiFile.getViewProvider().getDocument(), project);
-                //关闭语法检测
-                DaemonCodeAnalyzer daemonCodeAnalyzer = DaemonCodeAnalyzer.getInstance(project);
-                daemonCodeAnalyzer.setHighlightingEnabled(psiFile, false);
-            }
-        }catch (Throwable ex){
-            ex.printStackTrace();
-        }
-        if(null == editor) {
-            Document document = EditorFactory.getInstance().createDocument("");
-            editor = EditorFactory.getInstance().createEditor(document, project);
-        }
-        if(null != editor){
-            if (editor instanceof EditorEx) {
-                EditorEx editorEx = (EditorEx) editor;
-                if(null != virtualFile) {
-                    editorEx.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project,virtualFile));
-                }
-                editorEx.setCaretVisible(true);
-                editorEx.setEmbeddedIntoDialogWrapper(true);
-            }
-        }
-
-        return editor;
-    }
 
     public MethodPanel(Project project) {
         this.project = project;
@@ -191,6 +164,82 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
     }
 
 
+    private Editor createEditor(){
+        LightVirtualFile virtualFile = null;
+        try{
+            virtualFile = new LightVirtualFile("fileName.vcb", VCBLanguageFileType.INSTANCE, "");
+            PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+            if(null != psiFile && null != psiFile.getVirtualFile()) {
+                editor = EditorFactory.getInstance().createEditor(psiFile.getViewProvider().getDocument(), project);
+                //关闭语法检测
+                DaemonCodeAnalyzer daemonCodeAnalyzer = DaemonCodeAnalyzer.getInstance(project);
+                daemonCodeAnalyzer.setHighlightingEnabled(psiFile, false);
+            }
+        }catch (Throwable ex){
+            ex.printStackTrace();
+        }
+        if(null == editor) {
+            Document document = EditorFactory.getInstance().createDocument("");
+            editor = EditorFactory.getInstance().createEditor(document, project);
+        }
+        if(null != editor){
+            if (editor instanceof EditorEx) {
+                EditorEx editorEx = (EditorEx) editor;
+                if(null != virtualFile) {
+                    editorEx.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project,virtualFile));
+                }
+                editorEx.setCaretVisible(true);
+                editorEx.setEmbeddedIntoDialogWrapper(true);
+
+
+                MouseListener[] originalMouseListeners = editorEx.getGutterComponentEx().getMouseListeners();
+                for(MouseListener l : originalMouseListeners) {
+                    editorEx.getGutterComponentEx().removeMouseListener(l);
+                }
+                editorEx.getGutterComponentEx().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.isPopupTrigger() || SwingUtilities.isRightMouseButton(e)) {
+                            showEditorRightClickMenu(editorEx, e);
+                        }
+                    }
+                });
+            }
+        }
+
+        return editor;
+    }
+
+    //行号处右键菜单
+    private static void showEditorRightClickMenu(EditorEx editor, MouseEvent e) {
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        LogicalPosition pos = editor.xyToLogicalPosition(e.getPoint());
+        final int line = pos.line;
+
+        List<MyLineMakRenderer> myLineGutterRenderers = LineMarkManager.getAllHighlighters(editor).stream()
+                .filter(c->line==c.getEditorLine())
+                .collect(Collectors.toList());
+        MyLineMakRenderer existLineMark = myLineGutterRenderers.isEmpty() ? null : myLineGutterRenderers.get(0);
+
+        if(null  == existLineMark){
+            JMenuItem addItem = new JMenuItem("Add Line Label");
+            addItem.addActionListener(actionEvent -> LineMarkManager.showAddDialog(editor,line));
+            popupMenu.add(addItem);
+        }else {
+            JMenuItem modifyMenu = new JMenuItem("Modify L"+existLineMark.getLabelIndex());
+            modifyMenu.addActionListener(actionEvent -> LineMarkManager.showModifyDialog(existLineMark));
+            popupMenu.add(modifyMenu);
+
+            JMenuItem removeMenu = new JMenuItem("Remove L"+existLineMark.getLabelIndex());
+            removeMenu.addActionListener(actionEvent -> LineMarkManager.removeLineLabel(editor,line));
+            popupMenu.add(removeMenu);
+        }
+
+        popupMenu.show(e.getComponent(), e.getX(), e.getY());
+    }
+
+    
     private void initEditableAction(){
         access.onActionForCheckAccessBox("Method access", AccessConstant.METHOD_FLAGS,
                 ()->methodNode.access,
@@ -261,7 +310,7 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
         List<MyLineNumber> markLines = instructionInfo.getMarkLines();
 
         //行号标示高亮
-        MyLineGutterRenderer.markLineLighter(editor,markLines);
+        LineMarkManager.markLineLighter(editor,markLines);
 
         //行号表
         markLines = markLines.stream().filter(c->c.getLineSource()>=0).collect(Collectors.toList());
@@ -352,7 +401,7 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
 
         try{
             //获取行号
-            List<MyLineNumber> allMarkedLines = MyLineGutterRenderer.getAllMarkedLines(editor);
+            List<MyLineNumber> allMarkedLines = LineMarkManager.getAllMarkedLines(editor);
             Map<Integer, MyLineNumber> lineEditorMap = allMarkedLines.stream()
                     .collect(Collectors.toMap(MyLineNumber::getLineEditor, myLineNumber -> myLineNumber));
 
