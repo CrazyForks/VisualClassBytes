@@ -41,6 +41,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.ow2.asm/asm-tree
     implementation("org.ow2.asm:asm-tree:9.7")
 
+    // https://mvnrepository.com/artifact/commons-lang/commons-lang
+    implementation("commons-lang:commons-lang:2.6")
+
+
 }
 
 // Include the generated files in the source set

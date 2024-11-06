@@ -2,6 +2,7 @@ package com.liubs.vcb.domain.instn;
 
 import com.liubs.vcb.ex.InstructionException;
 import com.liubs.vcb.util.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.LdcInsnNode;
@@ -48,7 +49,7 @@ public class LdcInstn {
     public String makeInstString(){
         Object cst = ldcInsnNode.cst;
         if(cst instanceof String){
-            return "\""+cst+"\"";
+            return "\""+StringEscapeUtils.escapeJava(cst.toString())+"\"";
         }else if(cst instanceof Float) {
             return cst+"F";
         }else if(cst instanceof Long){
