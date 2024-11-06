@@ -2,7 +2,7 @@ package com.liubs.vcb.tree;
 
 import com.intellij.icons.AllIcons;
 import com.liubs.vcb.entity.MyInstructionInfo;
-import com.liubs.vcb.aggregate.MyAssemblyMethod;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyMethod;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.swing.*;

@@ -19,7 +19,7 @@ import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
-import com.liubs.vcb.aggregate.MultiLineInstn;
+import com.liubs.vcb.domain.instn.MultiLineInstn;
 import com.liubs.vcb.entity.MyInstructionInfo;
 import com.liubs.vcb.entity.MyLineNumber;
 import com.liubs.vcb.entity.Result;

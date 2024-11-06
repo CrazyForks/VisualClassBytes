@@ -1,9 +1,9 @@
 package com.liubs.vcb.ui;
 
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.liubs.vcb.aggregate.MyAssemblyClass;
-import com.liubs.vcb.aggregate.MyAssemblyField;
-import com.liubs.vcb.aggregate.MyAssemblyMethod;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyField;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyMethod;
 import com.liubs.vcb.tree.*;
 
 import org.objectweb.asm.tree.FieldNode;

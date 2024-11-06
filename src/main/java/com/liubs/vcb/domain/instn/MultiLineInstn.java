@@ -1,4 +1,4 @@
-package com.liubs.vcb.aggregate;
+package com.liubs.vcb.domain.instn;
 
 import com.liubs.vcb.constant.InstructionConstant;
 import org.objectweb.asm.tree.AbstractInsnNode;

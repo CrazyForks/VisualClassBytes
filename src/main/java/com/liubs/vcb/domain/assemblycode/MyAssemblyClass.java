@@ -1,4 +1,4 @@
-package com.liubs.vcb.aggregate;
+package com.liubs.vcb.domain.assemblycode;
 
 import com.liubs.vcb.entity.Result;
 import com.liubs.vcb.util.ExceptionUtil;

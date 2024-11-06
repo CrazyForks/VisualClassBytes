@@ -1,6 +1,7 @@
-package com.liubs.vcb.aggregate;
+package com.liubs.vcb.domain.assemblycode;
 
 import com.liubs.vcb.constant.InstructionConstant;
+import com.liubs.vcb.domain.instn.InvokeDynamicInstn;
 import com.liubs.vcb.entity.MyInstructionInfo;
 import com.liubs.vcb.entity.MyLineNumber;
 import org.objectweb.asm.Type;
@@ -141,10 +142,7 @@ public class MyAssemblyMethod {
 
             } else if (currentInsn instanceof InvokeDynamicInsnNode) {
                 InvokeDynamicInsnNode invokeDynamicInsn = (InvokeDynamicInsnNode) currentInsn;
-                assmblyBuild.append(Printer.OPCODES[invokeDynamicInsn.getOpcode()].toLowerCase().toLowerCase()).append(" ")
-                        .append(invokeDynamicInsn.name).append(" ").append(invokeDynamicInsn.desc)
-                        .append(" handle{").append(invokeDynamicInsn.bsm.getOwner()).append(".").append(invokeDynamicInsn.bsm.getName()).append(" ").append(invokeDynamicInsn.bsm.getDesc()).append("}")
-                        .append(" args{").append(Arrays.toString(invokeDynamicInsn.bsmArgs)).append("}");
+                assmblyBuild.append(InvokeDynamicInstn.parseString(invokeDynamicInsn));
             } else if (currentInsn instanceof MultiANewArrayInsnNode) {
                 MultiANewArrayInsnNode multiANewArrayInsn = (MultiANewArrayInsnNode) currentInsn;
                 assmblyBuild.append(Printer.OPCODES[multiANewArrayInsn.getOpcode()].toLowerCase().toLowerCase()).append(" ").append(multiANewArrayInsn.desc).append(" ").append(multiANewArrayInsn.dims);
@@ -186,7 +184,7 @@ public class MyAssemblyMethod {
             String[] split = args[0].split("[.]");
             return new MethodInsnNode(opCode,split[0],split[1],args[1]);
         } else if (instType == AbstractInsnNode.INVOKE_DYNAMIC_INSN) {
-
+            return InvokeDynamicInstn.parseInsn(String.join(" ",args));
         } else if (instType == AbstractInsnNode.JUMP_INSN) {
            return new JumpInsnNode(opCode,labelNodeMap.get(args[0]));
         } else if (instType == AbstractInsnNode.LDC_INSN) {
@@ -198,9 +196,9 @@ public class MyAssemblyMethod {
         } else if (instType == AbstractInsnNode.IINC_INSN) {
             return new IincInsnNode(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
         } else if (instType == AbstractInsnNode.TABLESWITCH_INSN) {
-            //在MultiLineInstn中处理
+            //已在MultiLineInstn中处理
         } else if (instType == AbstractInsnNode.LOOKUPSWITCH_INSN) {
-            //在MultiLineInstn中处理
+            //已在MultiLineInstn中处理
         } else if (instType == AbstractInsnNode.MULTIANEWARRAY_INSN) {
            return new MultiANewArrayInsnNode(args[0],Integer.parseInt(args[1]));
         }

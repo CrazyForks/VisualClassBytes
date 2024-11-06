@@ -1,7 +1,7 @@
 package com.liubs.vcb.tree;
 
 import com.intellij.icons.AllIcons;
-import com.liubs.vcb.aggregate.MyAssemblyClass;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
 import org.objectweb.asm.tree.ClassNode;
 
 import javax.swing.*;

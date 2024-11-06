@@ -10,7 +10,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.SideBorder;
 import com.intellij.ui.components.JBScrollPane;
 import com.liubs.vcb.util.NoticeInfo;
-import com.liubs.vcb.aggregate.MyAssemblyClass;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
 import com.liubs.vcb.entity.Result;
 import com.liubs.vcb.tree.BaseTreeNode;
 import com.liubs.vcb.action.MyActionButton;

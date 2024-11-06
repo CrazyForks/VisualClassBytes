@@ -1,4 +1,4 @@
-package com.liubs.vcb.aggregate;
+package com.liubs.vcb.domain.assemblycode;
 
 import org.objectweb.asm.tree.FieldNode;
 
