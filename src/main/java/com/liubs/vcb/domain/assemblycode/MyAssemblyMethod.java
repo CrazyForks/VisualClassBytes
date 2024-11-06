@@ -2,9 +2,9 @@ package com.liubs.vcb.domain.assemblycode;
 
 import com.liubs.vcb.constant.InstructionConstant;
 import com.liubs.vcb.domain.instn.InvokeDynamicInstn;
+import com.liubs.vcb.domain.instn.LdcInstn;
 import com.liubs.vcb.entity.MyInstructionInfo;
 import com.liubs.vcb.entity.MyLineNumber;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Printer;
 
@@ -66,7 +66,6 @@ public class MyAssemblyMethod {
                 frameNodes.add((FrameNode)currentInsn );
                 continue;
             } else if (currentInsn instanceof LabelNode) {
-
                 LabelNode label = (LabelNode) currentInsn;
                 MyLineNumber lineNumber = new MyLineNumber();
                 lineNumber.setLineEditor(lineCounter);
@@ -79,14 +78,7 @@ public class MyAssemblyMethod {
             } else if (currentInsn instanceof LdcInsnNode) {
                 LdcInsnNode ldcInsn = (LdcInsnNode) currentInsn;
                 assmblyBuild.append(Printer.OPCODES[ldcInsn.getOpcode()].toLowerCase()).append(" ");
-                if (ldcInsn.cst instanceof String) {
-                    Printer.appendString(assmblyBuild, (String) ldcInsn.cst);
-                } else if (ldcInsn.cst instanceof Type) {
-                    assmblyBuild.append(((Type) ldcInsn.cst).getDescriptor()).append(".class");
-                } else {
-                    assmblyBuild.append(ldcInsn.cst);
-                }
-
+                assmblyBuild.append(new LdcInstn(ldcInsn).makeInstString());
             } else if (currentInsn instanceof VarInsnNode) {
                 VarInsnNode varInsn = (VarInsnNode) currentInsn;
                 assmblyBuild.append(Printer.OPCODES[varInsn.getOpcode()].toLowerCase()+" "+varInsn.var);
@@ -188,17 +180,13 @@ public class MyAssemblyMethod {
         } else if (instType == AbstractInsnNode.JUMP_INSN) {
            return new JumpInsnNode(opCode,labelNodeMap.get(args[0]));
         } else if (instType == AbstractInsnNode.LDC_INSN) {
-            String s = args[0];
-            if(s.length()>1 && s.charAt(0) == '\"' && s.charAt(s.length()-1)=='\"') {
-                s = s.substring(1,s.length()-1);
-            }
-            return new LdcInsnNode(s);    //TODO 类型判断
+            return LdcInstn.create(String.join(" ",args)).getLdcInsnNode();
         } else if (instType == AbstractInsnNode.IINC_INSN) {
             return new IincInsnNode(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
         } else if (instType == AbstractInsnNode.TABLESWITCH_INSN) {
-            //已在MultiLineInstn中处理
+            //已在MultiLineInstn中处理 多行指令
         } else if (instType == AbstractInsnNode.LOOKUPSWITCH_INSN) {
-            //已在MultiLineInstn中处理
+            //已在MultiLineInstn中处理 多行指令
         } else if (instType == AbstractInsnNode.MULTIANEWARRAY_INSN) {
            return new MultiANewArrayInsnNode(args[0],Integer.parseInt(args[1]));
         }

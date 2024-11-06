@@ -47,6 +47,7 @@ public class MyAssemblyClass {
             result.setSuccess(true);
             result.setData(bytes);
         }catch (Throwable e){
+            e.printStackTrace();
             result.setSuccess(false);
             result.setErrorMessage(ExceptionUtil.getExceptionTracing(e));
         }
