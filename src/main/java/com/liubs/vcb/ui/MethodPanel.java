@@ -27,6 +27,7 @@ import com.liubs.vcb.language.VCBLanguageFileType;
 import com.liubs.vcb.tree.MethodTreeNode;
 import com.liubs.vcb.constant.AccessConstant;
 import com.liubs.vcb.ui.common.EditableLabel;
+import com.liubs.vcb.ui.common.EditableTable;
 import com.liubs.vcb.ui.linemark.LineMarkManager;
 import com.liubs.vcb.ui.linemark.MyLineMakRenderer;
 import com.liubs.vcb.util.ExceptionUtil;
@@ -152,8 +153,9 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
         //tabbed pane
         JBTabbedPane tabbedPane = new JBTabbedPane();
         tabbedPane.add("Code",editor.getComponent());
-        tabbedPane.add("LocalVariable",new JBScrollPane(new JBTable(localVariableTable)));
-        tabbedPane.add("Exception",new JBScrollPane(new JBTable(exceptionTable)));
+
+        tabbedPane.add("LocalVariable",new JBScrollPane(new EditableTable(localVariableTable).getPanel()));
+        tabbedPane.add("Exception",new JBScrollPane(new EditableTable(exceptionTable).getPanel()));
         tabbedPane.add("LineNumber",new JBScrollPane(new JBTable(lineNumberTable)));
         tabbedPane.add("Others",otherAttributePanel);
 
