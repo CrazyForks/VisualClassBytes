@@ -35,4 +35,99 @@ public class StringUtils {
             return false;
         }
     }
+
+    public static String escape(String str)  {
+        if(null == str || str.isEmpty()) {
+            return str;
+        }
+        StringBuilder strBuilder = new StringBuilder();
+
+        for(int i = 0,len=str.length(); i < len; ++i) {
+            char ch = str.charAt(i);
+            switch(ch) {
+                case '\"':
+                    strBuilder.append("\\\"");
+                    break;
+                case '\'':
+                    strBuilder.append("'");
+                    break;
+                case '\\':
+                    strBuilder.append("\\\\");
+                    break;
+                case '\b':
+                    strBuilder.append("\\b");
+                    break;
+                case '\f':
+                    strBuilder.append("\\f");
+                    break;
+                case '\n':
+                    strBuilder.append("\\n");
+                    break;
+                case '\r':
+                    strBuilder.append("\\r");
+                    break;
+                case '\t':
+                    strBuilder.append("\\t");
+                    break;
+                default:
+                    strBuilder.append(ch);
+                    break;
+
+            }
+        }
+        return strBuilder.toString();
+    }
+
+    public static String unescape(String str) {
+        if(null == str || str.isEmpty()) {
+            return str;
+        }
+        StringBuilder strBuilder = new StringBuilder();
+        boolean hadSlash = false;
+
+        for(int i = 0,len=str.length(); i < len; ++i) {
+            char ch = str.charAt(i);
+            if (hadSlash) {
+                hadSlash = false;
+                switch(ch) {
+                    case '\"':
+                        strBuilder.append('\"');
+                        break;
+                    case '\'':
+                        strBuilder.append('\'');
+                        break;
+                    case '\\':
+                        strBuilder.append('\\');
+                        break;
+                    case 'b':
+                        strBuilder.append('\b');
+                        break;
+                    case 'f':
+                        strBuilder.append('\f');
+                        break;
+                    case 'n':
+                        strBuilder.append('\n');
+                        break;
+                    case 'r':
+                        strBuilder.append('\r');
+                        break;
+                    case 't':
+                        strBuilder.append('\t');
+                        break;
+                    default:
+                        strBuilder.append(ch);
+                }
+            } else if (ch == '\\') {
+                hadSlash = true;
+            } else {
+                strBuilder.append(ch);
+            }
+        }
+
+        if (hadSlash) {
+            strBuilder.append('\\');
+        }
+
+        return strBuilder.toString();
+    }
 }

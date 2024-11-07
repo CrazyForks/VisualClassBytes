@@ -432,6 +432,21 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
             }
             treeNode.getMethodNode().localVariables = localVariables;
 
+            //构建Exception Table
+            List<TryCatchBlockNode> tryCatchBlocks = new ArrayList<>();
+            for (int row = 0; row < exceptionTable.getRowCount(); row++) {
+                LabelNode start = labelNodeMap.get(exceptionTable.getValueAt(row, 0).toString());
+                LabelNode end = labelNodeMap.get(exceptionTable.getValueAt(row, 1).toString());
+                LabelNode jump = labelNodeMap.get(exceptionTable.getValueAt(row, 2).toString());
+                String type = exceptionTable.getValueAt(row, 3).toString();
+                TryCatchBlockNode tryCatchBlockNode = new TryCatchBlockNode(start,end,jump,type);
+                tryCatchBlocks.add(tryCatchBlockNode);
+            }
+            if(!tryCatchBlocks.isEmpty()) {
+                treeNode.getMethodNode().tryCatchBlocks = tryCatchBlocks;
+            }
+
+
             //构建指令
             MultiLineInstn multiLineInstn = null;
             for(int i=0;i < assemblyCodes.length ;i++) {

@@ -73,7 +73,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
 
         //分割线
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
-        splitPane.setDividerLocation(300); // 初始分割线位置 (以像素为单位)
+        splitPane.setDividerLocation(260); // 初始分割线位置 (以像素为单位)
         splitPane.setResizeWeight(0.3); // 初始树面板占 30% 的宽度
 //        splitPane.setOneTouchExpandable(true); // 在分割线两边增加可展开/折叠按钮
         splitPane.setDividerSize(1);

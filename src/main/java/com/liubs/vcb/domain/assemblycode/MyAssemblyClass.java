@@ -39,11 +39,17 @@ public class MyAssemblyClass {
             ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
             //校验字节码
-            CheckClassAdapter checkAdapter = new CheckClassAdapter(classWriter, true);
+            try{
+                CheckClassAdapter checkAdapter = new CheckClassAdapter(classWriter, true);
+                classNode.accept(checkAdapter);
+            }catch (Exception chEx){
+                chEx.printStackTrace();
+                result.setSuccess(false);
+                result.setErrorMessage(chEx.getMessage());
+                return result;
+            }
 
-            classNode.accept(checkAdapter);
             byte[] bytes = classWriter.toByteArray();
-
             result.setSuccess(true);
             result.setData(bytes);
         }catch (Throwable e){

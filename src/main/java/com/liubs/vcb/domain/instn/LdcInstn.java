@@ -2,10 +2,11 @@ package com.liubs.vcb.domain.instn;
 
 import com.liubs.vcb.ex.InstructionException;
 import com.liubs.vcb.util.StringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.LdcInsnNode;
+
 
 /**
  * @author Liubsyy
@@ -17,7 +18,7 @@ public class LdcInstn {
     public static LdcInstn create(String line){
         Object cst = null;
         if(line.length()>2 && line.startsWith("\"") && line.endsWith("\"")) {
-            cst = line.substring(1,line.length()-1);
+            cst = StringUtils.unescape(line.substring(1,line.length()-1));
         }else if(line.matches("\\b[+-]?\\d+(\\.\\d+)?F\\b")){
             cst = Float.parseFloat(line.substring(0,line.length()-1));
         }else if(line.matches("\\b[+-]?\\d+L\\b")){
@@ -49,7 +50,7 @@ public class LdcInstn {
     public String makeInstString(){
         Object cst = ldcInsnNode.cst;
         if(cst instanceof String){
-            return "\""+StringEscapeUtils.escapeJava(cst.toString())+"\"";
+            return "\""+StringUtils.escape(cst.toString())+"\"";
         }else if(cst instanceof Float) {
             return cst+"F";
         }else if(cst instanceof Long){
@@ -65,4 +66,7 @@ public class LdcInstn {
             return String.valueOf(cst);
         }
     }
+
+
+
 }
