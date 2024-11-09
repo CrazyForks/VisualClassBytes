@@ -21,10 +21,11 @@ public class StringUtils {
 
 
     public static boolean isNumeric(String string) {
-        if (string != null && string.length() != 0) {
-            int l = string.length();
-
-            for(int i = 0; i < l; ++i) {
+        if (string != null && !string.isEmpty()) {
+            for(int i = 0,len=string.length(); i < len; ++i) {
+                if(i == 0 && len>1 && string.codePointAt(i)=='-') {
+                    continue;
+                }
                 if (!Character.isDigit(string.codePointAt(i))) {
                     return false;
                 }

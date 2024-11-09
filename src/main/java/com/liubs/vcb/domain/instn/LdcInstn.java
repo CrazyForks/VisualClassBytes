@@ -17,22 +17,36 @@ public class LdcInstn {
 
     public static LdcInstn create(String line){
         Object cst = null;
-        if(line.length()>2 && line.startsWith("\"") && line.endsWith("\"")) {
+        if(line.length()>=2 && line.startsWith("\"") && line.endsWith("\"")) {
             cst = StringUtils.unescape(line.substring(1,line.length()-1));
-        }else if(line.matches("\\b[+-]?\\d+(\\.\\d+)?F\\b")){
+        }else if (line.matches("^[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?F$")){
             cst = Float.parseFloat(line.substring(0,line.length()-1));
-        }else if(line.matches("\\b[+-]?\\d+L\\b")){
+        }else if(line.matches("^[+-]?\\d+L$")){
             cst = Long.parseLong(line.substring(0,line.length()-1));
-        }else if(line.matches("\\b[+-]?\\d+(\\.\\d+)?D\\b")){
+        }else if (line.matches("^[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?D$")){
             cst = Double.parseDouble(line.substring(0,line.length()-1));
         }else if(line.startsWith("handle{") && line.endsWith("}")){
-            cst = HandleInsn.create(line).getAsmHandle();
+            cst = HandleInsn.create(line.substring(7,line.length()-1)).getAsmHandle();
         }else if(line.startsWith("type{") && line.endsWith("}")){
-            cst = Type.getType(line);
+            cst = Type.getType(line.substring(5,line.length()-1));
         }else if(StringUtils.isNumeric(line)){
             cst = Integer.parseInt(line);
         }else {
-            throw new InstructionException("Unknow ldc: "+line);
+            if("Infinity".equals(line) || "InfinityD".equals(line)){
+                cst = Double.POSITIVE_INFINITY;
+            }else if("-Infinity".equals(line) || "-InfinityD".equals(line)){
+                cst = Double.NEGATIVE_INFINITY;
+            }else if("NaN".equals(line)|| "NaND".equals(line)){
+                cst = Double.NaN;
+            }else if("InfinityF".equals(line)){
+                cst = Float.POSITIVE_INFINITY;
+            }else if("-InfinityF".equals(line)){
+                cst = Float.NEGATIVE_INFINITY;
+            }else if("NaNF".equals(line)){
+                cst = Float.NaN;
+            }else{
+                throw new InstructionException("Unknow ldc: "+line);
+            }
         }
 
         return new LdcInstn(new LdcInsnNode(cst));

@@ -45,7 +45,8 @@ public class MyAssemblyClass {
             }catch (Exception chEx){
                 chEx.printStackTrace();
                 result.setSuccess(false);
-                result.setErrorMessage(chEx.getMessage());
+//                result.setErrorMessage(chEx.getMessage());
+                result.setErrorMessage(ExceptionUtil.getExceptionTracing(chEx));
                 return result;
             }
 

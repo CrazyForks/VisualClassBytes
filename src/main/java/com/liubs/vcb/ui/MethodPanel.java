@@ -411,7 +411,6 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
             String assemblyCode = editor.getDocument().getText();
             String[] assemblyCodes = assemblyCode.split("\n");
 
-
             List<AbstractInsnNode> insnList = new ArrayList<>();
 
             //先构建LabelNode
