@@ -13,11 +13,11 @@ import java.util.List;
  * @author Liubsyy
  * @date 2024/10/26
  */
-public class MultiCheckedMessageDialog extends DialogWrapper {
+public class MultiCheckedDialog extends DialogWrapper {
     private final List<JCheckBox> checkBoxes;
     private final JPanel panel;
 
-    public MultiCheckedMessageDialog(String title, String message,List<String> options, List<String> checkedOptions) {
+    public MultiCheckedDialog(String title, String message, List<String> options, List<String> checkedOptions) {
         super(true); // 让DialogWrapper支持模态
         setTitle(title);
         checkBoxes = new ArrayList<>();

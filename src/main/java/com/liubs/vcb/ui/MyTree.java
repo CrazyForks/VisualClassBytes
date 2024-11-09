@@ -11,7 +11,10 @@ import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -20,8 +23,73 @@ import java.util.List;
  */
 public class MyTree extends SimpleTree {
 
+    private BaseTreeNode rootNode;
 
-    public BaseTreeNode initNodes(MyAssemblyClass asmClassService) {
+    public void initTree(MyAssemblyClass asmClassService) {
+
+        rootNode = createTreeNode(asmClassService);
+
+        this.setModel(new DefaultTreeModel(rootNode));
+        this.setRootVisible(false);
+
+        // 设置自定义渲染器
+        this.setCellRenderer(new MyTreeCellRenderer());
+
+        //展开方法节点
+        Enumeration<TreeNode> children = rootNode.children();
+        while(children.hasMoreElements()) {
+            TreeNode treeNode = children.nextElement();
+            if(treeNode instanceof MethodTreeCategory) {
+                this.expandNode((MethodTreeCategory)treeNode);
+                break;
+            }
+        }
+    }
+
+    public List<BaseTreeNode> allNodes(){
+        List<BaseTreeNode> nodes = new ArrayList<>();
+        visitNode(nodes,rootNode);
+        return nodes;
+    }
+    private void visitNode(List<BaseTreeNode> nodes, BaseTreeNode visit) {
+        if(null == visit) {
+            return;
+        }
+        Enumeration<TreeNode> children = visit.children();
+        while(children.hasMoreElements()) {
+            TreeNode treeNode = children.nextElement();
+            if(treeNode instanceof BaseTreeNode) {
+                BaseTreeNode baseTreeNode = (BaseTreeNode)treeNode;
+                nodes.add(baseTreeNode);
+                visitNode(nodes,baseTreeNode);
+            }
+        }
+    }
+
+
+    //WARNING : 使用reload无法展开方法节点
+    public void refreshTree(MyAssemblyClass asmClassService) {
+
+        // 重新初始化节点
+        rootNode = createTreeNode(asmClassService);
+
+        // 通知树更新
+        ((DefaultTreeModel) this.getModel()).reload(rootNode);
+
+        this.expandNode(rootNode);
+        //展开方法节点
+        Enumeration<TreeNode> children = rootNode.children();
+        while(children.hasMoreElements()) {
+            TreeNode treeNode = children.nextElement();
+            if(treeNode instanceof MethodTreeCategory) {
+                this.expandNode((MethodTreeCategory)treeNode);
+                break;
+            }
+        }
+
+    }
+
+    private static BaseTreeNode createTreeNode(MyAssemblyClass asmClassService){
         BaseTreeNode rootNode = new BaseTreeNode("Root");
 
         ClassInfoTreeNode classInfoTreeNode = new ClassInfoTreeNode(asmClassService);
@@ -56,21 +124,13 @@ public class MyTree extends SimpleTree {
         rootNode.add(fieldsNode);
         rootNode.add(methodsNode);
 
-        this.setModel(new DefaultTreeModel(rootNode));
-        this.setRootVisible(false);
-
-        // 设置自定义渲染器
-        this.setCellRenderer(new MyTreeCellRenderer());
-
-        //展开方法节点
-        this.expandNode(methodsNode);
-
         return rootNode;
     }
 
 
+
     // 递归展开指定的节点
-    private void expandNode(BaseTreeNode node) {
+    public void expandNode(BaseTreeNode node) {
         // 获取节点路径
         TreePath path = new TreePath(node.getPath());
 
@@ -95,4 +155,9 @@ public class MyTree extends SimpleTree {
         // 确保选中的节点可见
         this.scrollPathToVisible(path);
     }
+
+    public BaseTreeNode getRootNode() {
+        return rootNode;
+    }
+
 }

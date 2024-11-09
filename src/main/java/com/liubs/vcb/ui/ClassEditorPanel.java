@@ -2,13 +2,18 @@ package com.liubs.vcb.ui;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SideBorder;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
+import com.liubs.vcb.domain.JarSave;
+import com.liubs.vcb.tree.MethodTreeCategory;
+import com.liubs.vcb.ui.common.RadioDialog;
 import com.liubs.vcb.util.NoticeInfo;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
 import com.liubs.vcb.entity.Result;
@@ -20,12 +25,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 /**
  * @author Liubsyy
@@ -39,6 +46,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
     private MyAssemblyClass asmClassService;
 
     private MyTree myTree;
+    private JBScrollPane treeScrollPane;
 
     private JPanel leftPanel;
     private ContentPanel rightPanel;
@@ -59,9 +67,9 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
 
         // 创建树
         myTree = new MyTree();
-        BaseTreeNode rootNode = myTree.initNodes(asmClassService);
+        myTree.initTree(asmClassService);
         myTree.addTreeSelectionListener(this);
-        JBScrollPane treeScrollPane = new JBScrollPane(myTree);
+        treeScrollPane = new JBScrollPane(myTree);
 
         //左边panel
         leftPanel = new JPanel(new BorderLayout());
@@ -97,10 +105,8 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
 
         this.add(splitPane, BorderLayout.CENTER);
 
-        //选中ClassInfo
-        try{
-            myTree.selectNode((BaseTreeNode)rootNode.getFirstChild());
-        }catch (Throwable ex){}
+        //必须等rightPanel初始化完后再默认选中第一个节点
+        myTree.selectNode((BaseTreeNode)myTree.getRootNode().getFirstChild());
     }
 
 
@@ -111,8 +117,8 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
         ArrayList<AnAction> actions = new ArrayList<>();
 
         AnAction saveClassAction = new MyActionButton("Save class",AllIcons.Actions.MenuSaveall, this::saveClass);
-        AnAction dumpASMCodeAction = new MyActionButton("Dump ASM access code", AllIcons.Actions.Download, null);
-        AnAction refreshAction = new MyActionButton("Refresh", AllIcons.Actions.Refresh, null);
+//        AnAction dumpASMCodeAction = new MyActionButton("Dump ASM access code", AllIcons.Actions.Download, null);
+        AnAction refreshAction = new MyActionButton("Refresh", AllIcons.Actions.Refresh, this::refreshTree);
 
 
         AnAction addField = new MyActionButton("Field",AllIcons.Nodes.Field, null);
@@ -122,8 +128,8 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
         addGroupWrapper.getTemplatePresentation().setIcon(AllIcons.General.Add);
 
         actions.add(saveClassAction);
-        actions.add(addGroupWrapper);
-        actions.add(dumpASMCodeAction);
+//        actions.add(addGroupWrapper);
+//        actions.add(dumpASMCodeAction);
         actions.add(refreshAction);
 
         ActionToolbar myToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR,
@@ -132,6 +138,45 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
 
         toolBarPanel.add(myToolBar.getComponent());
         return toolBarPanel;
+    }
+
+    private void refreshTree(){
+
+        virtualFile.refresh(false,false);
+        try {
+            byte[] classBytes = VfsUtilCore.loadBytes(virtualFile);
+            asmClassService = new MyAssemblyClass(classBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String selectPath = null;
+        BaseTreeNode selectedNode = (BaseTreeNode) myTree.getLastSelectedPathComponent();
+        if(selectedNode != null) {
+            selectPath = Arrays.toString(selectedNode.getPath());
+        }
+
+        //创建一个新的tree，refreshTree总有东西没有摘干净
+        myTree = new MyTree();
+        myTree.initTree(asmClassService);
+        myTree.addTreeSelectionListener(this);
+
+        boolean selectAny = false;
+        if(null != selectPath) {
+            for(BaseTreeNode c : myTree.allNodes()) {
+                if(selectPath.equals(Arrays.toString(c.getPath()))){
+                    selectAny = true;
+                    myTree.selectNode(c);
+                    break;
+                }
+            }
+        }
+
+        if(!selectAny){
+            myTree.selectNode((BaseTreeNode)myTree.getRootNode().getFirstChild());
+        }
+        
+        treeScrollPane.setViewportView(myTree);
     }
 
     private void saveClass(){
@@ -151,10 +196,28 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
             return;
         }
         try {
-            Files.write(Paths.get(virtualFile.getPath()),result.getData());
-            NoticeInfo.info("Save success to "+virtualFile.getPath());
-
-            virtualFile.refresh(false,false);
+            if(virtualFile.getPath().contains(".jar!")){
+                RadioDialog radioDialog = new RadioDialog("Save class in jar",
+                        null,
+                        Arrays.asList("Save to temp directory","Update jar"));
+                if(radioDialog.showAndGet()){
+                    boolean updateJar = radioDialog.getSelectRadio() == 1;
+                    JarSave jarSave = new JarSave(virtualFile);
+                    Result<String> r = updateJar ?
+                            jarSave.updateJar(result.getData()) : jarSave.saveTemp(result.getData());
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        if(r.isSuccess()) {
+                            NoticeInfo.info("Save success to "+r.getData());
+                        }else {
+                            NoticeInfo.error("Save err:"+r.getErrorMessage());
+                        }
+                    });
+                }
+            }else {
+                Files.write(Paths.get(virtualFile.getPath()),result.getData());
+                NoticeInfo.info("Save success to "+virtualFile.getPath());
+                virtualFile.refresh(false,false);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             NoticeInfo.error("Save fail:"+e.getMessage());

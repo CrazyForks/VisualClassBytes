@@ -94,7 +94,7 @@ public class EditableLabel extends JPanel {
         editAction.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                MultiCheckedMessageDialog checkedMessageDialog = new MultiCheckedMessageDialog("Edit Value",message,
+                MultiCheckedDialog checkedMessageDialog = new MultiCheckedDialog("Edit Value",message,
                         options,checkedOptions.get());
                 if(checkedMessageDialog.showAndGet()) {
                     resultHandler.accept(checkedMessageDialog.getSelectedOptions());
@@ -110,7 +110,7 @@ public class EditableLabel extends JPanel {
         editAction.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                AccessMessageDialog checkedMessageDialog = new AccessMessageDialog("Edit Value",message,
+                AccessDialog checkedMessageDialog = new AccessDialog("Edit Value",message,
                         accessFlags,access.get());
                 if(checkedMessageDialog.showAndGet()) {
                     resultHandler.accept(checkedMessageDialog.getAccess());

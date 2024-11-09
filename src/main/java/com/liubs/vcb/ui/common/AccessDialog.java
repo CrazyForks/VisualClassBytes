@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
  * @author Liubsyy
  * @date 2024/10/26
  */
-public class AccessMessageDialog extends MultiCheckedMessageDialog{
+public class AccessDialog extends MultiCheckedDialog {
     private List<Integer> accessFlags;
 
-    public AccessMessageDialog(String title, String message, Map<Integer, String> flags, int access) {
+    public AccessDialog(String title, String message, Map<Integer, String> flags, int access) {
         super(title, message, AccessConstant.toDescriptions(flags),
                 AccessConstant.splitAccess(access).stream()
                         .map(c-> String.format("0x%04x(%s)", c,flags.get(c)))
