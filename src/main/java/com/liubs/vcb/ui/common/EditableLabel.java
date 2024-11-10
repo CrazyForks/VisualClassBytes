@@ -20,20 +20,22 @@ import java.util.function.Supplier;
  * @date 2024/10/24
  */
 public class EditableLabel extends JPanel {
-    private JLabel jLabel;
-    private JBLabel editAction;
+    public static final int H_GAP = 10;
+
+    protected TruncatedLabel jLabel;
+    protected JBLabel editAction;
 
     public EditableLabel(){
         this(false);
     }
     public EditableLabel(boolean readOnly) {
-        jLabel = new JLabel();
+        jLabel = new TruncatedLabel();
         if(!readOnly) {
             editAction = new JBLabel(MyIcons.EDIT);
             editAction.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 设置手形指针
         }
 
-        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 18, 0);
+        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, H_GAP, 0);
         setLayout(flowLayout);
         add(jLabel);
         if(!readOnly) {
@@ -56,11 +58,11 @@ public class EditableLabel extends JPanel {
 
 
     public void setText(String text) {
-        jLabel.setText(text);
+        jLabel.setFullText(text);
     }
 
     public String getText() {
-        return jLabel.getText();
+        return jLabel.getFullText();
     }
 
 
@@ -117,5 +119,35 @@ public class EditableLabel extends JPanel {
                 }
             }
         });
+    }
+
+
+    static class TruncatedLabel extends JLabel {
+        private String fullText; // 用于存储完整的文本内容
+
+        public TruncatedLabel() {
+            super();
+        }
+
+        public void setFullText(String text) {
+            this.fullText = text; // 保存完整文本
+            updateDisplayedText(); // 更新显示内容
+        }
+
+        public String getFullText() {
+            return fullText;
+        }
+
+        private void updateDisplayedText() {
+            if(null == fullText) {
+                super.setText(null);
+                return;
+            }
+            if (fullText.length() > 80) {
+                super.setText(fullText.substring(0, 80) + "...");
+            } else {
+                super.setText(fullText); // 不超过则显示完整内容
+            }
+        }
     }
 }

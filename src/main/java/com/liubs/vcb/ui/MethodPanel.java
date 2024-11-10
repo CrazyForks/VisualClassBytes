@@ -258,10 +258,10 @@ public class MethodPanel extends JPanel implements IPanelRefresh<MethodTreeNode>
         exceptionDeclared.onActionForInput("Method throws",null,r->{
             methodNode.exceptions = Arrays.stream(r.trim().split(",")).collect(Collectors.toList());
         });
-//        maxStack.onActionForInput("Max stack", IntInputValidator.INSTANCE, r->{
+//        maxStack.onActionForInput("Max stack", NumberInputValidator.INSTANCE, r->{
 //            methodNode.maxStack = Integer.parseInt(r.trim());
 //        });
-//        maxLocals.onActionForInput("Max locals", IntInputValidator.INSTANCE, r->{
+//        maxLocals.onActionForInput("Max locals", NumberInputValidator.INSTANCE, r->{
 //            methodNode.maxLocals = Integer.parseInt(r.trim());
 //        });
     }

@@ -25,14 +25,12 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 
 /**
  * @author Liubsyy
@@ -77,7 +75,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
         leftPanel.add(this.createToolBar(),BorderLayout.SOUTH);
 
         //右边panel
-        rightPanel = new ContentPanel(project);
+        rightPanel = new ContentPanel(project,this);
 
         //分割线
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
@@ -175,7 +173,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
         if(!selectAny){
             myTree.selectNode((BaseTreeNode)myTree.getRootNode().getFirstChild());
         }
-        
+
         treeScrollPane.setViewportView(myTree);
     }
 
@@ -195,6 +193,21 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
             NoticeInfo.error("Save fail:"+result.getErrorMessage());
             return;
         }
+
+        saveClassFile(result.getData());
+    }
+
+    public void saveConstPool(){
+        Result<byte[]> result = asmClassService.saveConstPoolToClass();
+        if(!result.isSuccess()){
+            NoticeInfo.error("Save fail:"+result.getErrorMessage());
+            return;
+        }
+        saveClassFile(result.getData());
+    }
+
+
+    private void saveClassFile(byte[] bytes){
         try {
             if(virtualFile.getPath().contains(".jar!")){
                 RadioDialog radioDialog = new RadioDialog("Save class in jar",
@@ -204,7 +217,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
                     boolean updateJar = radioDialog.getSelectRadio() == 1;
                     JarSave jarSave = new JarSave(virtualFile);
                     Result<String> r = updateJar ?
-                            jarSave.updateJar(result.getData()) : jarSave.saveTemp(result.getData());
+                            jarSave.updateJar(bytes) : jarSave.saveTemp(bytes);
                     ApplicationManager.getApplication().invokeLater(() -> {
                         if(r.isSuccess()) {
                             NoticeInfo.info("Save success to "+r.getData());
@@ -214,7 +227,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
                     });
                 }
             }else {
-                Files.write(Paths.get(virtualFile.getPath()),result.getData());
+                Files.write(Paths.get(virtualFile.getPath()),bytes);
                 NoticeInfo.info("Save success to "+virtualFile.getPath());
                 virtualFile.refresh(false,false);
             }
@@ -242,6 +255,9 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
         if(null != rightPanel) {
             rightPanel.dispose();
         }
+    }
 
+    public MyTree getMyTree() {
+        return myTree;
     }
 }

@@ -15,6 +15,6 @@ public class InnerClassTreeCategory extends BaseTreeNode{
 
     @Override
     public Icon icon() {
-        return AllIcons.FileTypes.JavaClass;
+        return AllIcons.Hierarchy.Class;
     }
 }

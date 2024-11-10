@@ -4,8 +4,11 @@ import com.intellij.ui.treeStructure.SimpleTree;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyField;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyMethod;
+import com.liubs.vcb.domain.assemblycode.MyAssemblyConst;
 import com.liubs.vcb.tree.*;
 
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantPool;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -13,9 +16,7 @@ import org.objectweb.asm.tree.MethodNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Liubsyy
@@ -24,6 +25,8 @@ import java.util.List;
 public class MyTree extends SimpleTree {
 
     private BaseTreeNode rootNode;
+
+    private Map<Integer,ConstantTreeNode> constantTreeNodeMap = new HashMap<>();
 
     public void initTree(MyAssemblyClass asmClassService) {
 
@@ -89,10 +92,23 @@ public class MyTree extends SimpleTree {
 
     }
 
-    private static BaseTreeNode createTreeNode(MyAssemblyClass asmClassService){
+    private BaseTreeNode createTreeNode(MyAssemblyClass asmClassService){
         BaseTreeNode rootNode = new BaseTreeNode("Root");
 
         ClassInfoTreeNode classInfoTreeNode = new ClassInfoTreeNode(asmClassService);
+
+        ConstantPoolCategory constantPoolCategory = new ConstantPoolCategory();
+        ConstantPool constantPool = asmClassService.getConstantPool();
+        Constant[] constants = constantPool.getConstantPool();
+        for (int i = 1,len=constants.length; i <len; i++) {
+            Constant constant = constants[i];
+            if (null != constant) {
+                MyAssemblyConst myAssemblyConst = new MyAssemblyConst(i,constantPool,constant);
+                ConstantTreeNode constantTreeNode = new ConstantTreeNode(myAssemblyConst);
+                constantPoolCategory.add(constantTreeNode);
+                constantTreeNodeMap.put(i,constantTreeNode);
+            }
+        }
 
         InterfaceTreeCategory interfacesNode = new InterfaceTreeCategory();
         List<String> interfaces = asmClassService.getClassNode().interfaces;
@@ -119,6 +135,7 @@ public class MyTree extends SimpleTree {
         }
 
         rootNode.add(classInfoTreeNode);
+        rootNode.add(constantPoolCategory);
         rootNode.add(interfacesNode);
         rootNode.add(innerClassTreeCategory);
         rootNode.add(fieldsNode);
@@ -160,4 +177,7 @@ public class MyTree extends SimpleTree {
         return rootNode;
     }
 
+    public Map<Integer, ConstantTreeNode> getConstantTreeNodeMap() {
+        return constantTreeNodeMap;
+    }
 }

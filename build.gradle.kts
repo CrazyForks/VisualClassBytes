@@ -41,6 +41,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.ow2.asm/asm-tree
     implementation("org.ow2.asm:asm-tree:9.7")
 
+    // https://mvnrepository.com/artifact/org.apache.bcel/bcel
+    implementation("org.apache.bcel:bcel:6.10.0")
+
 }
 
 // Include the generated files in the source set

@@ -1,12 +1,13 @@
 package com.liubs.vcb.ui;
 
+
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.liubs.vcb.constant.AccessConstant;
 import com.liubs.vcb.tree.ClassInfoTreeNode;
 import com.liubs.vcb.ui.common.EditableLabel;
-import com.liubs.vcb.ui.validator.IntInputValidator;
+import com.liubs.vcb.ui.validator.NumberInputValidator;
 import org.objectweb.asm.tree.ClassNode;
 
 import javax.swing.*;
@@ -62,10 +63,10 @@ public class ClassInfoPanel extends JPanel implements IPanelRefresh<ClassInfoTre
     private ClassNode classNode;
 
     private void initEditAction(){
-        minorVersion.onActionForInput("Minor version", IntInputValidator.INSTANCE, r -> {
+        minorVersion.onActionForInput("Minor version", NumberInputValidator.INSTANCE, r -> {
             classNode.version = (Integer.parseInt(r) << 16 & 0xFFFF0000) | (classNode.version & 0xFFFF);
         });
-        majorVersion.onActionForInput("Major version",IntInputValidator.INSTANCE,r->{
+        majorVersion.onActionForInput("Major version", NumberInputValidator.INSTANCE, r->{
             classNode.version = (classNode.version & 0xFFFF0000) | (Integer.parseInt(r) & 0xFFFF);
         });
 
@@ -77,7 +78,7 @@ public class ClassInfoPanel extends JPanel implements IPanelRefresh<ClassInfoTre
                 });
 
         superName.onActionForInput("Super name",null,r->{
-            classNode.superName = superName.getText().trim();
+            classNode.superName = r;
         });
         name.onActionForInput("Class name",null,r->{
             classNode.name = r;

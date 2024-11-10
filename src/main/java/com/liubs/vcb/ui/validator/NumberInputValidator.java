@@ -8,8 +8,8 @@ import com.liubs.vcb.util.StringUtils;
  * @author Liubsyy
  * @date 2024/10/26
  */
-public class IntInputValidator implements InputValidator {
-    public static IntInputValidator INSTANCE = new IntInputValidator();
+public class NumberInputValidator implements InputValidator {
+    public static NumberInputValidator INSTANCE = new NumberInputValidator();
     @Override
     public boolean checkInput(@NlsSafe String s) {
         return StringUtils.isNumeric(s);
