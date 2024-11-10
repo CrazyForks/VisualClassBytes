@@ -1,18 +1,20 @@
 <idea-plugin>
   <id>com.liubs.visualclassbytes</id>
   <name>VisualClassBytes</name>
-  <version>1.0.0</version>
+  <version>beta-0.1</version>
   <vendor email="Liubsyy@gmail.com" url="https://github.com/Liubsyy/VisualClassBytes">Liubsyy</vendor>
 
   <description><![CDATA[
 
-    Class bytes editor
+    Java class bytes editor
 
     <br>
 
     <ul>
-        <li>Init plugin forasda  asd as d</li>
-
+        <li>Class version, name, access and etc.</li>
+        <li>Constant Pool</li>
+        <li>Field</li>
+        <li>Method: assembly code,local variable,exception table,line number and etc.</li>
     </ul>
 
     ]]></description>
@@ -20,10 +22,12 @@
   <change-notes><![CDATA[
 
 
-      <h3>1.0</h3>
-      <ul>
-        <li>Init plugin</li>
-      </ul>
+    <h3>beta</h3>
+    <ul>
+        <li>Init plugin VisualClassBytes</li>
+    </ul>
+
+
     ]]>
   </change-notes>
 

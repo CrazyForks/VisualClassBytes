@@ -48,8 +48,11 @@ public class ContentPanel extends JPanel {
         if(null != currentPanel
                         && (currentPanel instanceof ConstPoolPanel)
                         && (panel instanceof ConstPoolPanel)){
-            ((ConstPoolPanel) currentPanel).refresh((ConstantTreeNode) selectedNode);
-            return;
+            Component[] components = this.getComponents();
+            if(null != components && components.length > 0) {
+                ((ConstPoolPanel) currentPanel).refresh((ConstantTreeNode) selectedNode);
+                return;
+            }
         }
 
         this.removeAll();
