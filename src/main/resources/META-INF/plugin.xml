@@ -1,12 +1,12 @@
 <idea-plugin>
   <id>com.liubs.visualclassbytes</id>
   <name>VisualClassBytes</name>
-  <version>beta-0.1</version>
+  <version>0.1</version>
   <vendor email="Liubsyy@gmail.com" url="https://github.com/Liubsyy/VisualClassBytes">Liubsyy</vendor>
 
   <description><![CDATA[
 
-    Java class bytes editor
+    Java class bytes editor (beta)
 
     <br>
 
@@ -22,7 +22,7 @@
   <change-notes><![CDATA[
 
 
-    <h3>beta</h3>
+    <h3>beta version</h3>
     <ul>
         <li>Init plugin VisualClassBytes</li>
     </ul>
