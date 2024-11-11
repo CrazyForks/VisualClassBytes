@@ -15,6 +15,8 @@ import org.objectweb.asm.util.CheckClassAdapter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * @author Liubsyy
@@ -48,23 +50,16 @@ public class MyAssemblyClass {
     }
 
 
-    public Result<byte[]> dumpBytes(){
+    public Result<byte[]> dumpBytes(List<URL> dependentURLs){
         Result<byte[]> result = new Result<>();
         try{
             // 创建ClassWriter，自动设置栈帧信息
-            ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+//            ClassWriter classWriter = new ClassWriter( ClassWriter.COMPUTE_FRAMES );
+            MyClassWriter classWriter = new MyClassWriter(dependentURLs, ClassWriter.COMPUTE_FRAMES );
 
             //校验字节码
-            try{
-                CheckClassAdapter checkAdapter = new CheckClassAdapter(classWriter, true);
-                classNode.accept(checkAdapter);
-            }catch (Exception chEx){
-                chEx.printStackTrace();
-                result.setSuccess(false);
-//                result.setErrorMessage(chEx.getMessage());
-                result.setErrorMessage(ExceptionUtil.getExceptionTracing(chEx));
-                return result;
-            }
+            CheckClassAdapter checkAdapter = new CheckClassAdapter(classWriter, true);
+            classNode.accept(checkAdapter);
 
             byte[] bytes = classWriter.toByteArray();
             result.setSuccess(true);
@@ -72,7 +67,16 @@ public class MyAssemblyClass {
         }catch (Throwable e){
             e.printStackTrace();
             result.setSuccess(false);
-            result.setErrorMessage(ExceptionUtil.getExceptionTracing(e));
+
+            if(e instanceof TypeNotPresentException) {
+                if(e.getCause() instanceof ClassNotFoundException) {
+                    result.setErrorMessage("Class not found:"+e.getCause().getMessage());
+                }else {
+                    result.setErrorMessage(e.getMessage());
+                }
+            }else {
+                result.setErrorMessage(ExceptionUtil.getExceptionTracing(e));
+            }
         }
 
         return result;

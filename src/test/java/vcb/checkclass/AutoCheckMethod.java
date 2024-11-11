@@ -2,17 +2,21 @@ package vcb.checkclass;
 
 import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyMethod;
+import com.liubs.vcb.domain.assemblycode.MyClassWriter;
 import com.liubs.vcb.domain.instn.MultiLineInstn;
 import com.liubs.vcb.entity.MyInstructionInfo;
 import com.liubs.vcb.entity.MyLineNumber;
+import com.liubs.vcb.util.ExceptionUtil;
 import org.junit.Test;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -41,6 +45,7 @@ public class AutoCheckMethod {
 //        String jarPath = "/Users/liubs/.m2/repository/com/google/code/gson/gson/2.8.3/gson-2.8.3.jar";
         String jarPath = "/Users/liubs/.m2/repository/org/springframework/spring-core/5.3.27/spring-core-5.3.27.jar";
 
+        List<URL> urls = Arrays.asList(new File(jarPath).toURI().toURL());
         try (JarFile jarFile = new JarFile(jarPath)){
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -58,7 +63,7 @@ public class AutoCheckMethod {
                         }
                         bytes = outputStream.toByteArray();
                     }
-                    checkClass(bytes);
+                    checkClass(urls,bytes);
                 }
             }
         }
@@ -72,11 +77,11 @@ public class AutoCheckMethod {
 
 
     public void testAssemblyClass(String classFilePath) throws IOException {
-        checkClass(Files.readAllBytes(Paths.get(classFilePath)));
+        checkClass(null,Files.readAllBytes(Paths.get(classFilePath)));
     }
 
 
-    private void checkClass(byte[] classBytes){
+    private void checkClass(List<URL> dependentLib,byte[] classBytes){
         MyAssemblyClass asmClass = new MyAssemblyClass(classBytes);
 
 
@@ -84,21 +89,21 @@ public class AutoCheckMethod {
         for(MethodNode method : methods) {
             MyAssemblyMethod assemblyMethod = new MyAssemblyMethod(method);
             try{
-                checkMethod(asmClass,assemblyMethod);
+                checkMethod(dependentLib,asmClass,assemblyMethod);
 
                 System.out.printf("***** 字节码校验通过, class=%s, method=%s *****\n",
                         asmClass.getClassNode().name, method.name);
             }catch (Exception ex) {
-                System.err.printf("***** 字节码校验不通过, class=%s, method=%s,err=%s *****\n", asmClass.getClassNode().name, method.name, ex.getMessage());
-//                System.err.printf("***** 字节码校验不通过, class=%s, method=%s,err=%s *****\n", asmClass.getClassNode().name, method.name, ExceptionUtil.getExceptionTracing(ex));
-//                System.exit(0);
+//                System.err.printf("***** 字节码校验不通过, class=%s, method=%s,err=%s *****\n", asmClass.getClassNode().name, method.name, ex.getMessage());
+                System.err.printf("***** 字节码校验不通过, class=%s, method=%s,err=%s *****\n", asmClass.getClassNode().name, method.name, ExceptionUtil.getExceptionTracing(ex));
+                System.exit(0);
             }
         }
 
     }
 
 
-    private void checkMethod(MyAssemblyClass asmClass, MyAssemblyMethod myAssemblyMethod ) {
+    private void checkMethod(List<URL> dependentLib,MyAssemblyClass asmClass, MyAssemblyMethod myAssemblyMethod ) {
         MethodNode methodNode = myAssemblyMethod.getMethodNode();
 
         /**
@@ -253,7 +258,7 @@ public class AutoCheckMethod {
         /**
          * 进行字节码校验
          */
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        MyClassWriter classWriter = new MyClassWriter(dependentLib,ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         CheckClassAdapter checkAdapter = new CheckClassAdapter(classWriter, true);
         asmClass.getClassNode().accept(checkAdapter);
     }

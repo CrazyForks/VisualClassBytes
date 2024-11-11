@@ -9,10 +9,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SideBorder;
-import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.liubs.vcb.domain.JarSave;
-import com.liubs.vcb.tree.MethodTreeCategory;
+import com.liubs.vcb.project.ProjectDependency;
 import com.liubs.vcb.ui.common.RadioDialog;
 import com.liubs.vcb.util.NoticeInfo;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
@@ -188,7 +187,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
         }
 
         //保存字节码
-        Result<byte[]> result = asmClassService.dumpBytes();
+        Result<byte[]> result = asmClassService.dumpBytes(ProjectDependency.getDependentLibURLs(project));
         if(!result.isSuccess()){
             NoticeInfo.error("Save fail:"+result.getErrorMessage());
             return;
