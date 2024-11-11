@@ -1,8 +1,11 @@
 package com.liubs.vcb.domain.assemblycode;
 
 import com.liubs.vcb.constant.ConstantPoolConst;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantObject;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 
 /**
  * @author Liubsyy
@@ -22,9 +25,29 @@ public class MyAssemblyConst {
     public String getName(){
         StringBuilder str = new StringBuilder();
         str.append("[").append(index).append("] ");
+        str.append("<");
         str.append(ConstantPoolConst.getConstantName(constant.getTag()));
-//        str.append("_");
-//        str.append(constant.toString());
+        str.append("> ");
+
+        if(constant.getTag() == Const.CONSTANT_Integer
+                || constant.getTag() == Const.CONSTANT_Long
+                || constant.getTag() == Const.CONSTANT_Float
+                || constant.getTag() == Const.CONSTANT_Double) {
+            if(constant instanceof ConstantObject) {
+                try{
+                    str.append(((ConstantObject)constant).getConstantValue(constantPool));
+                }catch (Exception ex){}
+            }
+        }
+        if(constant instanceof ConstantUtf8) {
+            ConstantUtf8 constantUtf8 = (ConstantUtf8)constant;
+            String bytes = constantUtf8.getBytes();
+            if(bytes.length() > 20) {
+                bytes = bytes.substring(0,20)+"...";
+            }
+            str.append(bytes);
+        }
+
 
         return str.toString();
     }
