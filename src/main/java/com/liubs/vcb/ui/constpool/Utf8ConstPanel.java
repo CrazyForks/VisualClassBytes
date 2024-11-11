@@ -14,7 +14,7 @@ public class Utf8ConstPanel extends ConstBasePanel{
     public Utf8ConstPanel() {
         addLabeledComponent("Value : ", value);
 
-        value.onActionForInput("Class name", null, r->{
+        value.onActionForInput("Utf-8 value", null, r->{
             ConstantUtf8 constantUtf8 = new ConstantUtf8(r);
             myAssemblyConst.setConstant(constantUtf8);
         });

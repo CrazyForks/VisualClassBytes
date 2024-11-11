@@ -2,7 +2,7 @@ package com.liubs.vcb.ui.constpool;
 
 import com.liubs.vcb.domain.assemblycode.MyAssemblyConst;
 import com.liubs.vcb.ui.common.EditableLabel;
-import com.liubs.vcb.ui.validator.NumberInputValidator;
+import com.liubs.vcb.ui.validator.IntInputValidator;
 import org.apache.bcel.classfile.ConstantInteger;
 
 /**
@@ -16,7 +16,7 @@ public class IntegerConstPanel extends ConstBasePanel{
 
         addLabeledComponent("Bytes : ", bytes);
 
-        bytes.onActionForInput("Class name", NumberInputValidator.INSTANCE, r->{
+        bytes.onActionForInput("Integer value", IntInputValidator.INSTANCE, r->{
             constant.setBytes(Integer.parseInt(r));
         });
     }

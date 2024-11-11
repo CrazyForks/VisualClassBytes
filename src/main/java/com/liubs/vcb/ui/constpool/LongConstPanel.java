@@ -2,7 +2,7 @@ package com.liubs.vcb.ui.constpool;
 
 import com.liubs.vcb.domain.assemblycode.MyAssemblyConst;
 import com.liubs.vcb.ui.common.EditableLabel;
-import com.liubs.vcb.ui.validator.NumberInputValidator;
+import com.liubs.vcb.ui.validator.IntInputValidator;
 import org.apache.bcel.classfile.ConstantLong;
 
 
@@ -17,7 +17,7 @@ public class LongConstPanel extends ConstBasePanel{
 
         addLabeledComponent("Bytes : ", bytes);
 
-        bytes.onActionForInput("Class name", NumberInputValidator.INSTANCE, r->{
+        bytes.onActionForInput("Long value", IntInputValidator.INSTANCE, r->{
             constant.setBytes(Long.parseLong(r));
         });
     }

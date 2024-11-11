@@ -1,9 +1,11 @@
 package com.liubs.vcb.ui.common;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.components.JBLabel;
+import com.liubs.vcb.util.NoticeInfo;
 import icons.MyIcons;
 
 import javax.swing.*;
@@ -81,8 +83,12 @@ public class EditableLabel extends JPanel {
                         "Edit Value", Messages.getInformationIcon(),
                         getText(),inputValidator);
                 if(null != inputValue) {
-                    resultHandler.accept(inputValue);
-                    setText(inputValue);
+                    try{
+                        resultHandler.accept(inputValue);
+                        setText(inputValue);
+                    }catch (NumberFormatException numberFormatException){
+                        Messages.showErrorDialog("Can't format :"+inputValue,"Edit Value Error");
+                    }
                 }
             }
         });

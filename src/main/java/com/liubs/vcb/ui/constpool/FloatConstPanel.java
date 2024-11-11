@@ -2,7 +2,6 @@ package com.liubs.vcb.ui.constpool;
 
 import com.liubs.vcb.domain.assemblycode.MyAssemblyConst;
 import com.liubs.vcb.ui.common.EditableLabel;
-import com.liubs.vcb.ui.validator.NumberInputValidator;
 import org.apache.bcel.classfile.ConstantFloat;
 
 /**
@@ -16,7 +15,7 @@ public class FloatConstPanel extends ConstBasePanel{
 
         addLabeledComponent("Bytes : ", bytes);
 
-        bytes.onActionForInput("Class name", NumberInputValidator.INSTANCE, r->{
+        bytes.onActionForInput("Float value", null, r->{
             constant.setBytes(Float.parseFloat(r));
         });
     }

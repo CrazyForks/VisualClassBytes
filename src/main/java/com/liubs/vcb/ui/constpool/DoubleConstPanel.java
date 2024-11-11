@@ -2,7 +2,6 @@ package com.liubs.vcb.ui.constpool;
 
 import com.liubs.vcb.domain.assemblycode.MyAssemblyConst;
 import com.liubs.vcb.ui.common.EditableLabel;
-import com.liubs.vcb.ui.validator.NumberInputValidator;
 import org.apache.bcel.classfile.ConstantDouble;
 
 /**
@@ -15,7 +14,7 @@ public class DoubleConstPanel extends ConstBasePanel{
     public DoubleConstPanel() {
         addLabeledComponent("Bytes : ", bytes);
 
-        bytes.onActionForInput("Class name", NumberInputValidator.INSTANCE, r->{
+        bytes.onActionForInput("Double value", null, r->{
             constant.setBytes(Double.parseDouble(r));
         });
     }
