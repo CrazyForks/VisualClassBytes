@@ -34,3 +34,9 @@ Open the method node to modify the bytecode instructions.
 <img src="./img/edit_method.png" width="800" height="572" />
 
 You can also modify local variable,exception table,line number and etc.
+
+### 5. Modify constant pool
+
+Open the constant pool node to modify constant.
+
+<img src="./img/const_pool.png" width="600" height="488" />
