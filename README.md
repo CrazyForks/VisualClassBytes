@@ -12,10 +12,25 @@ IDEA plugin for Java class bytecode editor.
 
 ## Quick start
 
+### 1. Install plugin from marketplace
 First install the plugin JarEditor from marketplace, IDEA at least version **2020.3**
 
-After that **right click on class file** -> **Visual ClassBytes**
+### 2. Open VisualClassBytes Editor 
+
+Right click on class file** -> Visual ClassBytes, you can open VisualClassBytes editor.
 
 <img src="./img/vcb_main.png" width="800" height="600" />
 
-Then you can modify class information, field, constant pool, inner class and method .
+
+### 3. Modify info
+
+Then you can modify class ,field,inner class and method info etc.
+
+<img src="./img/edit_info.png" width="800" height="650" />
+
+### 4. Edit method bytecode instructions
+
+Open the method node to modify the bytecode instructions.
+<img src="./img/edit_method.png" width="800" height="572" />
+
+You can also modify local variable,exception table,line number and etc.
