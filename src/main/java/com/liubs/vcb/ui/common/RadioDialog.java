@@ -5,6 +5,7 @@ import com.liubs.vcb.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +17,13 @@ public class RadioDialog extends DialogWrapper {
     private List<JRadioButton> radioButtons = new ArrayList<>();
     private final JPanel panel = new JPanel();
 
-    public RadioDialog(String title,String message, List<String> radioButtons) {
+    public RadioDialog(String title,String message, List<String> radioButtons,Dimension preferSize) {
         super( true);
         setTitle(title);
 
+        if(null != preferSize) {
+            panel.setPreferredSize(preferSize);
+        }
 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(Box.createVerticalStrut(10));

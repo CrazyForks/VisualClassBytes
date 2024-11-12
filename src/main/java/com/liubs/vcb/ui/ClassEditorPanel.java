@@ -211,7 +211,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
             if(virtualFile.getPath().contains(".jar!")){
                 RadioDialog radioDialog = new RadioDialog("Save class in jar",
                         null,
-                        Arrays.asList("Save to temp directory","Update jar"));
+                        Arrays.asList("Save to temp directory","Update jar"),new Dimension(180,50));
                 if(radioDialog.showAndGet()){
                     boolean updateJar = radioDialog.getSelectRadio() == 1;
                     JarSave jarSave = new JarSave(virtualFile);
