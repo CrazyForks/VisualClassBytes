@@ -9,6 +9,7 @@ import com.liubs.vcb.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Liubsyy
@@ -26,10 +27,12 @@ public class LineMarkDialog extends DialogWrapper {
         setTitle("Line Label");
 
         index = new JBTextField();
+        index.setPreferredSize(new Dimension(200, 30));
         if(labelIndex >=0) {
             index.setText("L"+labelIndex);
         }
         sourceLine = new JBTextField();
+        sourceLine.setPreferredSize(new Dimension(200, 30));
         if(sourceCodeLine>=0) {
             sourceLine.setText(String.valueOf(sourceCodeLine));
         }
