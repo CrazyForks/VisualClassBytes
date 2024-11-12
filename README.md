@@ -14,6 +14,7 @@ IDEA plugin for Java class bytecode editor.
 
 First install the plugin JarEditor from marketplace, IDEA at least version **2020.3**
 
+After that **right click on class file** -> **Visual ClassBytes**
 
 <img src="./img/vcb_main.png" width="800" height="600" />
 
