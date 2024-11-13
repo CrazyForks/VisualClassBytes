@@ -12,6 +12,7 @@ import com.intellij.ui.SideBorder;
 import com.intellij.ui.components.JBScrollPane;
 import com.liubs.vcb.domain.JarSave;
 import com.liubs.vcb.project.ProjectDependency;
+import com.liubs.vcb.tree.ConstantTreeNode;
 import com.liubs.vcb.ui.common.RadioDialog;
 import com.liubs.vcb.util.NoticeInfo;
 import com.liubs.vcb.domain.assemblycode.MyAssemblyClass;
@@ -177,6 +178,11 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
     }
 
     private void saveClass(){
+
+        if(myTree.getLastSelectedPathComponent() instanceof ConstantTreeNode) {
+            saveConstPool();
+            return;
+        }
 
         //先保存panel内存信息
         BaseTreeNode selectedNode = (BaseTreeNode)myTree.getLastSelectedPathComponent();
