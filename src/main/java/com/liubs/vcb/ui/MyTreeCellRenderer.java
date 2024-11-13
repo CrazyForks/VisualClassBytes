@@ -18,7 +18,12 @@ public class MyTreeCellRenderer extends JLabel implements javax.swing.tree.TreeC
         BaseTreeNode node = (BaseTreeNode) value;
 
         // 设置节点文本
-        setText(node.getUserObject().toString());
+        if(null == node) {
+            setText("NoName");
+        }else {
+            setText(node.getUserObject().toString());
+        }
+
 
         //设置图标
         Icon icon = node.icon();
