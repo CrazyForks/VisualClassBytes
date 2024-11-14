@@ -6,15 +6,15 @@
 
   <description><![CDATA[
 
-    Java class bytes editor (beta)
+    Java class bytecode editor
 
     <br>
 
     <ul>
-        <li>Class version, name, access and etc.</li>
-        <li>Constant Pool</li>
-        <li>Field</li>
-        <li>Method: assembly code,local variable,exception table,line number and etc.</li>
+        <li>Modify info of class, field, inner class, method and etc.</li>
+        <li>Edit method bytecode instructions, local variable table, exception table, and line number table</li>
+        <li>Modify constant pool</li>
+        <li>Support class file and class in JAR</li>
     </ul>
 
     ]]></description>
@@ -22,7 +22,7 @@
   <change-notes><![CDATA[
 
 
-    <h3>beta version</h3>
+    <h3>1.0</h3>
     <ul>
         <li>Init plugin VisualClassBytes</li>
     </ul>
