@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SideBorder;
@@ -223,6 +224,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
                     JarSave jarSave = new JarSave(virtualFile);
                     Result<String> r = updateJar ?
                             jarSave.updateJar(bytes) : jarSave.saveTemp(bytes);
+                    VirtualFileManager.getInstance().refreshWithoutFileWatcher(true);
                     virtualFile.refresh(false,false);
                     ApplicationManager.getApplication().invokeLater(() -> {
                         if(r.isSuccess()) {
@@ -235,6 +237,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
             }else {
                 Files.write(Paths.get(virtualFile.getPath()),bytes);
                 NoticeInfo.info("Save success to "+virtualFile.getPath());
+                VirtualFileManager.getInstance().refreshWithoutFileWatcher(true);
                 virtualFile.refresh(false,false);
             }
         } catch (IOException e) {
