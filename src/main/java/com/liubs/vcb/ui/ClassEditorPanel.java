@@ -223,6 +223,7 @@ public class ClassEditorPanel extends JPanel implements TreeSelectionListener{
                     JarSave jarSave = new JarSave(virtualFile);
                     Result<String> r = updateJar ?
                             jarSave.updateJar(bytes) : jarSave.saveTemp(bytes);
+                    virtualFile.refresh(false,false);
                     ApplicationManager.getApplication().invokeLater(() -> {
                         if(r.isSuccess()) {
                             NoticeInfo.info("Save success to "+r.getData());
