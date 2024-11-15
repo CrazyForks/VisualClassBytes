@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.liubs.visualclassbytes</id>
   <name>VisualClassBytes</name>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <vendor email="Liubsyy@gmail.com" url="https://github.com/Liubsyy/VisualClassBytes">Liubsyy</vendor>
 
   <description><![CDATA[
@@ -56,7 +56,7 @@
 
 
   <actions>
-    <action id="openClassEditor" class="com.liubs.vcb.action.OpenClassEditorAction"
+    <action id="vcb.openClassEditor" class="com.liubs.vcb.action.OpenClassEditorAction"
             text="Visual ClassBytes" description="Visual class bytes editor" >
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
