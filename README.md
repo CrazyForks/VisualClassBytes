@@ -17,7 +17,7 @@ First install the plugin JarEditor from marketplace, IDEA at least version **202
 
 ### 2. Open VisualClassBytes Editor 
 
-Right click on class file** -> Visual ClassBytes, you can open VisualClassBytes editor.
+Right click on class file -> Visual ClassBytes, you can open VisualClassBytes editor.
 
 <img src="./img/vcb_main.png" width="800" height="600" />
 
