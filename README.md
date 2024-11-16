@@ -1,6 +1,7 @@
 ## VisualClassBytes
 
-IDEA plugin for Java class bytecode editor.
+IDEA plugin for Java class bytecode editor, based on
+ASM and BCEL.
 
 
 ## Features
